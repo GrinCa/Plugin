@@ -1,0 +1,9 @@
+name: PluginJeu
+main: org.hissshaw.PluginJeu
+version: 1.0
+
+commands:
+  online:
+
+
+    
