@@ -4,6 +4,10 @@ version: 1.0
 
 commands:
   online:
+  abort:
+  launch:
+  scan:
+  
 
 
     

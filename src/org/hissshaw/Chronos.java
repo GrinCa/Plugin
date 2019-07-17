@@ -15,37 +15,49 @@ import java.util.logging.Logger;
  */
 public class Chronos extends Thread{
     
-    public Chronos(GameManager gameManager){
+    public Chronos(PluginJeu pluginJeu, GameManager gameManager){
+        this.pluginJeu = pluginJeu;
         this.chronos = 0;
-        sampleTime = 100;
+        this.sampleTime = 100;
         this.gameManager = gameManager;
+        this.game = new Game(pluginJeu);
+        this.attente = 3_000;
     }
     
     public void setIsRunning(boolean isRunning){
         this.isRunning = isRunning;
-        this.playDuration = 10_000;
+    }
+    
+    public Game getGame(){
+        return this.game;
     }
     
     
     public int getChronos(){
-        return chronos;
+        return this.chronos;
     }
     
-    public void process(){
+    private void process(){
         chronos += sampleTime;
         if(!check())
             setIsRunning(false);
     }
     
-    public boolean check(){
-        if(chronos >= playDuration)
+    private boolean check(){
+        if(chronos >= attente){
+            if(!game.isAlive()){
+                game = new Game(pluginJeu);
+                game.setIsRunning(true);
+                game.start();
+            }
             return false;
+        }  
         return true;
     }
     
     @Override
     public void run(){
-        System.out.println("[Thread Jeu] : ########## Thread lancé ##########");
+        System.out.println("[Thread Chronos] : ########## Chronos launched ##########");
         while(isRunning){
             try {
                 sleep(sampleTime);
@@ -54,14 +66,16 @@ public class Chronos extends Thread{
                 Logger.getLogger(Chronos.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        System.out.println("[Thread Jeu] : ########## Terminated ##########");
+        System.out.println("[Thread Chronos] : ########## Chronos terminated ##########");
         return;
     }
     
     private int sampleTime;
     private boolean isRunning;
     private int chronos;
-    private int playDuration;
+    private int attente;
     private GameManager gameManager;
+    private Game game;
+    private PluginJeu pluginJeu;
     
 }

@@ -6,6 +6,7 @@
 package org.hissshaw;
 
 import java.util.ArrayList;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,21 +19,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class GameManager implements Listener {
 
-    public GameManager() {
+    public GameManager(PluginJeu pluginJeu) {
+        this.pluginJeu = pluginJeu;
         this.nbrMinJoueurs = 1;
         playerList = new ArrayList<Player>();
-        chronos = new Chronos(this);
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent ev) {
-        addPlayer(ev.getPlayer());
-        launch();
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent ev) {
-        removePlayer(ev.getPlayer());
+        chronos = new Chronos(pluginJeu, this);
     }
 
     public boolean launch() {
@@ -40,16 +31,23 @@ public class GameManager implements Listener {
         if (playerList.size() >= nbrMinJoueurs) {
             if (!chronos.isAlive()) {
                 isPossible = true;
-                chronos = new Chronos(this);
+                chronos = new Chronos(pluginJeu, this);
                 chronos.setIsRunning(true);
                 chronos.start();
             }
         }
         return isPossible;
     }
-    
-    public void stop(){
+
+    public void stop() {
+        chronos.getGame().setIsRunning(false);
         chronos.setIsRunning(false);
+    }
+    
+    public void scanPlayerList(){
+        for(Player p : Bukkit.getServer().getOnlinePlayers()){
+            addPlayer(p);
+        }
     }
 
     public void addPlayer(Player player) {
@@ -67,21 +65,34 @@ public class GameManager implements Listener {
     public void removePlayer(Player player) {
         playerList.remove(player);
     }
-    
-    public ArrayList<Player> getPlayerList(){
+
+    public ArrayList<Player> getPlayerList() {
         return this.playerList;
     }
-    
-    public int getNbrMinJoueurs(){
+
+    public int getNbrMinJoueurs() {
         return this.nbrMinJoueurs;
     }
-    
-    public Chronos getChronos(){
+
+    public Chronos getChronos() {
         return chronos;
+    }
+
+    /* LISTENERS */
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent ev) {
+        addPlayer(ev.getPlayer());
+        launch();
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent ev) {
+        removePlayer(ev.getPlayer());
     }
 
     private int nbrMinJoueurs;
     private ArrayList<Player> playerList;
     private Chronos chronos;
+    private PluginJeu pluginJeu;
 
 }

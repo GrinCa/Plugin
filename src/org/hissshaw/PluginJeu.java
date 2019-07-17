@@ -25,13 +25,21 @@ public class PluginJeu extends JavaPlugin {
     }
 
     private void registerListener() {
-        gameManager = new GameManager();
+        gameManager = new GameManager(this);
+        gameManager.scanPlayerList();
         getServer().getPluginManager().registerEvents(gameManager, this);
     }
 
     private void registerCommands() {
         commandsManager = new CommandsManager(gameManager);
         getCommand("online").setExecutor(commandsManager);
+        getCommand("abort").setExecutor(commandsManager);
+        getCommand("launch").setExecutor(commandsManager);
+        getCommand("scan").setExecutor(commandsManager);
+    }
+    
+    public GameManager getGameManager(){
+        return this.gameManager;
     }
 
     private GameManager gameManager;

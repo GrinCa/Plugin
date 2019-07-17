@@ -15,13 +15,13 @@ import org.bukkit.entity.Player;
  *
  * @author Julien
  */
-public class CommandsManager implements CommandExecutor{
-    
-    public CommandsManager(GameManager gameManager){
+public class CommandsManager implements CommandExecutor {
+
+    public CommandsManager(GameManager gameManager) {
         this.gameManager = gameManager;
         this.playerList = gameManager.getPlayerList();
     }
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String msg, String[] args) {
         if (command.getName().equalsIgnoreCase("online")) {
@@ -33,41 +33,56 @@ public class CommandsManager implements CommandExecutor{
                 }
             }
 
-        } else if(command.getName().equalsIgnoreCase("abort")){
-            if(gameManager.getChronos().isAlive())
+        } else if (command.getName().equalsIgnoreCase("abort")) {
+            if (gameManager.getChronos().isAlive() || gameManager.getChronos().getGame().isAlive()) {
                 gameManager.stop();
-            else{
-                if(sender instanceof Player){
+                if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    p.sendMessage("[Infos] : Le thread n'est pas en cours d'execution");
-                }else
-                    System.out.println("[PluginJeu : Infos] : Le thread n'est pas en cours d'execution");
-            }    
-        }else if(command.getName().equalsIgnoreCase("launch")){
-            if(!gameManager.getChronos().isAlive()){
+                    p.sendMessage("[Infos] : Extinction des threads");
+                } else {
+                    System.out.println("[PluginJeu : Infos] : Extinction des threads");
+                }
+            } else {
+                if (sender instanceof Player) {
+                    Player p = (Player) sender;
+                    p.sendMessage("[Infos] : Aucun thread n'est pas en cours d'execution");
+                } else {
+                    System.out.println("[PluginJeu : Infos] : Aucun thread n'est pas en cours d'execution");
+                }
+            }
+        } else if (command.getName().equalsIgnoreCase("launch")) {
+            if (!gameManager.getChronos().isAlive() && !gameManager.getChronos().getGame().isAlive()) {
                 boolean isPossible = gameManager.launch();
-                if(isPossible){
-                    if(sender instanceof Player){
+                if (isPossible) {
+                    if (sender instanceof Player) {
                         Player p = (Player) sender;
-                        p.sendMessage("[Infos] : Le thread s'éxecute");
-                    }else{
-                        System.out.println("[PluginJeu : Infos] : Le thread s'éxecute");
+                        p.sendMessage("[Infos] : Le thread chronos s'éxecute");
+                    } else {
+                        System.out.println("[PluginJeu : Infos] : Le thread chronos s'éxecute");
                     }
                 } else {
-                    if(sender instanceof Player){
+                    if (sender instanceof Player) {
                         Player p = (Player) sender;
-                        p.sendMessage("[Infos] : Le thread ne peut être lancé");
-                    }else{
-                        System.out.println("[PluginJeu : Infos] : Le thread ne peut être lancé");
+                        p.sendMessage("[Infos] : Le thread chronos ne peut être lancé");
+                    } else {
+                        System.out.println("[PluginJeu : Infos] : Le thread chronos ne peut être lancé");
                     }
                 }
             }
+        } else if (command.getName().equalsIgnoreCase("scan")) {
+            gameManager.scanPlayerList();
+            if (sender instanceof Player) {
+                Player p = (Player) sender;
+                p.sendMessage("[PluginJeu : info] : Scan effectué");
+            } else {
+                System.out.println("[PluginJeu : info] : Scan effectué");
+            }
         }
-        
+
         return false;
     }
-    
+
     private GameManager gameManager;
     private ArrayList<Player> playerList;
-    
+
 }
