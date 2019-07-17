@@ -29,7 +29,7 @@ public class GameManager implements Listener {
     public boolean launch() {
         boolean isPossible = false;
         if (playerList.size() >= nbrMinJoueurs) {
-            if (!chronos.isAlive()) {
+            if (!chronos.isAlive() && !chronos.getGame().isAlive()) {
                 isPossible = true;
                 chronos = new Chronos(pluginJeu, this);
                 chronos.setIsRunning(true);

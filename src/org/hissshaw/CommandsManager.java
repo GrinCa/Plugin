@@ -77,6 +77,11 @@ public class CommandsManager implements CommandExecutor {
             } else {
                 System.out.println("[PluginJeu : info] : Scan effectué");
             }
+        } else if(command.getName().equalsIgnoreCase("setmat")){
+            if(sender instanceof Player){
+                gameManager.getChronos().getGame().setMaterial((Player) sender);
+            }
+            
         }
 
         return false;

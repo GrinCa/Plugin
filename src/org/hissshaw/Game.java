@@ -9,9 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
@@ -24,6 +25,8 @@ public class Game extends Thread {
         this.sampleTime = 100;
         this.chronos = 0;
         this.blockLocation = new Location(Bukkit.getWorld("world"), 0d, 0d, 0d);
+        this.playDuration = 100 * 1000;
+        this.radius = 5;
     }
 
     public void setIsRunning(boolean isRunning) {
@@ -42,21 +45,49 @@ public class Game extends Thread {
 
     private void createBlockLocation() {
         double x = 0;
-        double y = 0;
+        double z = 0;
         double playerNumber = 0;
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
             x += p.getLocation().getX();
-            y += p.getLocation().getY();
+            z += p.getLocation().getZ();
             playerNumber++;
         }
-        x = x / playerNumber;
-        y = y / playerNumber;
-        blockLocation.setX(x);
-        blockLocation.setY(y);
+        x = Math.floor(x / playerNumber);
+        z = Math.floor(z / playerNumber);
+        blockLocation.setX(x + Math.floor(Math.random() * radius));
+        blockLocation.setY(80 + Math.floor(3 * Math.random()));
+        blockLocation.setZ(z + Math.floor(Math.random() * radius));
+        
+        setMaterial(Bukkit.getServer().getPlayer("Hissshaw"));
+        setBlock();
+    }
+
+    private void setBlock() {
+        new BukkitRunnable() {
+            public void run() {
+                blockLocation.getBlock().setType(material);
+            }
+        }.runTask(pluginJeu);
+    }
+
+    private boolean check() {
+        if (chronos > playDuration) {
+            return false;
+        }
+        return true;
     }
 
     public Location getBlockLocation() {
         return this.blockLocation;
+    }
+
+    private void inform() {
+        Bukkit.broadcastMessage("echec");
+    }
+    
+    public void setMaterial(Player player){
+        this.material = player.getInventory().getContents()[0].getType();
+        System.out.println(this.material.toString());
     }
 
     @Override
@@ -65,6 +96,11 @@ public class Game extends Thread {
         launchGame();
         while (isRunning) {
             process();
+            if (!check()) {
+                inform();
+                pluginJeu.getGameManager().stop();
+            }
+
             try {
                 sleep(sampleTime);
             } catch (InterruptedException ex) {
@@ -81,5 +117,8 @@ public class Game extends Thread {
     private PluginJeu pluginJeu;
     private Location blockLocation;
     private long chronos;
+    private long playDuration;
+    private int radius;
+    private Material material = Material.GRASS;
 
 }

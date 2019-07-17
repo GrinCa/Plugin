@@ -5,6 +5,8 @@
  */
 package org.hissshaw;
 
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -41,6 +43,7 @@ public class PluginJeu extends JavaPlugin {
     public GameManager getGameManager(){
         return this.gameManager;
     }
+    
 
     private GameManager gameManager;
     private CommandsManager commandsManager;
