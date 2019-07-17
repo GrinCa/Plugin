@@ -23,6 +23,7 @@ public class Chronos extends Thread{
     
     public void setIsRunning(boolean isRunning){
         this.isRunning = isRunning;
+        this.playDuration = 10_000;
     }
     
     
@@ -37,7 +38,7 @@ public class Chronos extends Thread{
     }
     
     public boolean check(){
-        if(gameManager.getPlayerList().size() < gameManager.getNbrMinJoueurs())
+        if(chronos >= playDuration)
             return false;
         return true;
     }
@@ -60,6 +61,7 @@ public class Chronos extends Thread{
     private int sampleTime;
     private boolean isRunning;
     private int chronos;
+    private int playDuration;
     private GameManager gameManager;
     
 }

@@ -35,15 +35,17 @@ public class GameManager implements Listener {
         removePlayer(ev.getPlayer());
     }
 
-    public void launch() {
+    public boolean launch() {
+        boolean isPossible = false;
         if (playerList.size() >= nbrMinJoueurs) {
             if (!chronos.isAlive()) {
+                isPossible = true;
                 chronos = new Chronos(this);
                 chronos.setIsRunning(true);
                 chronos.start();
             }
-
         }
+        return isPossible;
     }
     
     public void stop(){
@@ -72,6 +74,10 @@ public class GameManager implements Listener {
     
     public int getNbrMinJoueurs(){
         return this.nbrMinJoueurs;
+    }
+    
+    public Chronos getChronos(){
+        return chronos;
     }
 
     private int nbrMinJoueurs;
